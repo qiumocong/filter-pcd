@@ -6,6 +6,21 @@ import os
 SAVE_COUNT = 0
 
 
+def frames_to_pointcloud(depth_frame, color_frame, depth_intrinsics):
+    o3d_color = o3d.geometry.Image(color_frame)
+    o3d_depth = o3d.geometry.Image(depth_frame)
+    rgbd = o3d.geometry.RGBDImage.create_from_color_and_depth(
+        o3d_color, o3d_depth,
+        depth_scale=1000.0,
+        depth_trunc=4.0,
+        convert_rgb_to_intensity=False
+    )
+    pcd = o3d.geometry.PointCloud.create_from_rgbd_image(
+        rgbd, depth_intrinsics
+    )
+    return pcd
+
+
 def process_point_cloud(pcd,
                         min_depth=None,
                         max_depth=None,

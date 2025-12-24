@@ -71,6 +71,7 @@ def main(process: bool = False, use_offical_estimation: bool = False, print_fps:
             if process:
                 processed_pcd = process_point_cloud(pcd, -3, -0.2, 0.05, 6, 1.0)
                 pcd.points = processed_pcd.points
+                pcd.colors = processed_pcd.colors
                 if not visualize:
                     return pcd
                 if first_frame:

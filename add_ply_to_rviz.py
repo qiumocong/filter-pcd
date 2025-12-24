@@ -4,35 +4,24 @@ import rospy
 import std_msgs.msg
 from sensor_msgs.msg import PointCloud2, PointField
 import sensor_msgs.point_cloud2 as pc2
+import get_realsense_ply as rs_cam
 import numpy as np
 import math
 
 
 def main():
-    # 1. 初始化 ROS 节点
     rospy.init_node('point_cloud_publisher_node')
-
-    # 2. 创建发布者 (Topic 名称: "/my_point_cloud")
     pub = rospy.Publisher('/my_point_cloud', PointCloud2, queue_size=10)
-
-    # 设置发布频率 (10Hz)
-    rate = rospy.Rate(10)
-
+    # 设置发布频率 (5Hz)
+    rate = rospy.Rate(5)
     rospy.loginfo("开始发布点云数据...")
-
     while not rospy.is_shutdown():
-        # 3. 模拟实时数据生成 (例如生成一个旋转的正弦波点云)
         # 实际使用时，这里替换为你的真实点云数据源
-        points = []
-        t = rospy.get_time()
-        for i in range(1000):
-            x = float(i) / 100.0
-            y = math.sin(x + t)  # 让波形动起来
-            z = math.cos(x + t)
-
-            # (x, y, z) 坐标
-            points.append([x, y, z])
-
+        pcd = rs_cam.main(process=True, use_offical_estimation=False)
+        if pcd is not None:
+            points = np.asarray(pcd.points).tolist()
+        else:
+            points = [[0, 0, 0]]
         # 4. 创建 PointCloud2 消息头
         header = std_msgs.msg.Header()
         header.stamp = rospy.Time.now()
